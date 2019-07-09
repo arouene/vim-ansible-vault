@@ -56,7 +56,7 @@ function! AnsibleVault#Vault() abort
 	" encrypt value
 	let res = system('ansible-vault encrypt_string', value)
 	" replace the value by the encrypted one
-	let new_line = substitute(line, original_value, res, '')
+	let new_line = substitute(line, '\V'.escape(original_value, '\/'), res, '')
 	call append(pos, split(new_line, '\n'))
 	normal! dd
 endfunction
@@ -86,7 +86,7 @@ function! AnsibleVault#Unvault() abort
 	" decrypt value
 	let res = system('ansible-vault decrypt', join(lines, ''))
 	" replace the value by the unencrypted one
-	let new_line = substitute(line, value, res, '')
+	let new_line = substitute(line, value, escape(res, '&\'), '')
 	call setline(original_pos, new_line)
 	" remove extra encrypted lines
 	let encrypted_begin = original_pos + 1
