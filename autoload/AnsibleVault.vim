@@ -7,6 +7,7 @@ if exists('g:autoloaded_ansible_vault')
 endif
 let g:autoloaded_ansible_vault = 1
 
+"Check if the password file can be found
 function! s:checkPasswordFile()
 	let password_file = $ANSIBLE_VAULT_PASSWORD_FILE
 	if password_file == ''
@@ -20,6 +21,7 @@ function! s:checkPasswordFile()
 	return 1
 endfunction
 
+" Check if ansible-vault can be found and executed
 function! s:checkAnsibleVault()
 	if !executable('ansible-vault')
 		echomsg 'ansible-vault not found or not executable'
@@ -28,17 +30,30 @@ function! s:checkAnsibleVault()
 	return 1
 endfunction
 
+" Remove single quotes, double quotes, spaces, tabs
 function! s:unquote(string)
 	return trim(a:string, '	 "''')
+endfunction
+
+" Replace a substring without regex
+function! s:replace(str, match, sub)
+	let pat = '\V'.escape(a:match, '\')
+	let sub = escape(a:sub, '&\')
+	return substitute(a:str, pat, sub, '')
+endfunction
+
+function! s:getValue()
+	let pos = line('.')
+	let line = getline(pos)
+	let value = matchstr(line, '\v^\s*[^:]*: \zs(.*)\ze$')
+	return [pos, line, value]
 endfunction
 
 function! AnsibleVault#Vault() abort
 	if !s:checkPasswordFile() || !s:checkAnsibleVault()
 		return
 	endif
-	let pos = line('.')
-	let line = getline(pos)
-	let value = matchstr(line, '\v^\s*[^:]*: \zs(.*)\ze$')
+	let [pos, line, value] = s:getValue()
 	if value == ""
 		echomsg 'No value to encrypt'
 		return
@@ -56,7 +71,7 @@ function! AnsibleVault#Vault() abort
 	" encrypt value
 	let res = system('ansible-vault encrypt_string', value)
 	" replace the value by the encrypted one
-	let new_line = substitute(line, '\V'.escape(original_value, '\/'), res, '')
+	let new_line = s:replace(line, original_value, res)
 	call append(pos, split(new_line, '\n'))
 	normal! dd
 endfunction
@@ -65,9 +80,7 @@ function! AnsibleVault#Unvault() abort
 	if !s:checkPasswordFile() || !s:checkAnsibleVault()
 		return
 	endif
-	let pos = line('.')
-	let line = getline(pos)
-	let value = matchstr(line, '\v^\s*[^:]*: \zs(.*)\ze$')
+	let [pos, line, value] = s:getValue()
 	if value == ""
 		echomsg 'No value to decrypt'
 		return
@@ -86,7 +99,7 @@ function! AnsibleVault#Unvault() abort
 	" decrypt value
 	let res = system('ansible-vault decrypt', join(lines, ''))
 	" replace the value by the unencrypted one
-	let new_line = substitute(line, value, escape(res, '&\'), '')
+	let new_line = s:replace(line, value, res)
 	call setline(original_pos, new_line)
 	" remove extra encrypted lines
 	let encrypted_begin = original_pos + 1
@@ -94,6 +107,7 @@ function! AnsibleVault#Unvault() abort
 	silent execute encrypted_begin.",".encrypted_end."d"
 endfunction
 
+" Install public commands
 function! AnsibleVault#Init()
 	if &modifiable
 		command! -buffer AnsibleVault call AnsibleVault#Vault()
