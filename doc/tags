@@ -1,0 +1,8 @@
+AnsibleUnvault	AnsibleVault.txt	/*AnsibleUnvault*
+AnsibleVault	AnsibleVault.txt	/*AnsibleVault*
+AnsibleVault.txt	AnsibleVault.txt	/*AnsibleVault.txt*
+ansible-vault	AnsibleVault.txt	/*ansible-vault*
+ansible-vault-commands	AnsibleVault.txt	/*ansible-vault-commands*
+ansible-vault-installation	AnsibleVault.txt	/*ansible-vault-installation*
+ansible-vault-limits	AnsibleVault.txt	/*ansible-vault-limits*
+ansible-vault-usage	AnsibleVault.txt	/*ansible-vault-usage*
