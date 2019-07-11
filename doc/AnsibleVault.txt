@@ -1,29 +1,42 @@
-*AnsibleVault.txt*
+*AnsibleVault.txt*                                    Last change: 2019 Jul 11
+>
+			       VIM-ANSIBLE-VAULT
+<
+
 
 Author:  Aurélien Rouëné <aurelien.github.arouene@rouene.fr>
 License: Apache License 2.0
 
-DESCRIPTION                                              *ansible-vault*
+1. Description		|ansible-vault|
+2. Installation		|ansible-vault-installation|
+3. Usage		|ansible-vault-usage|
+4. Commands		|ansible-vault-commands|
+5. Limitations		|ansible-vault-limits|
 
-This plugin can be used for vaulting or unvaulting inline values of a yaml
+==============================================================================
+1. Description					*ansible-vault*
+
+This plugin can be used for vaulting or unvaulting an inline values of a yaml
 file
 
-INSTALLATION                                      *ansible-vault-installation*
+==============================================================================
+2. Installation					*ansible-vault-installation*
 
 With vundle, just insert the line below in your vimrc file:
 >
-        Plugin 'arouene/vim-ansible-vault'
+	Plugin 'arouene/vim-ansible-vault'
 <
 Then use the command :PluginInstall
 
 You can define mapping for the commands:
 >
-        " Ansible-Vault
-        nnoremap <Leader>av :AnsibleVault<CR>
-        nnoremap <Leader>au :AnsibleUnvault<CR>
+	" Ansible-Vault
+	nnoremap <Leader>av :AnsibleVault<CR>
+	nnoremap <Leader>au :AnsibleUnvault<CR>
 <
 
-USAGE                                                    *ansible-vault-usage*
+==============================================================================
+3. Usage					*ansible-vault-usage*
 
 The ANSIBLE_VAULT_PASSWORD_FILE environment variable must be set to a valid
 file path containing the password to use with ansible-vault to decrypt or
@@ -33,26 +46,25 @@ ansible-vault executable must be indenpendently installed, executable and
 accessible from PATH environment, see |ansible-vault-installation| 
 
 
-COMMANDS                                              *ansible-vault-commands*
+==============================================================================
+4. Commands					*ansible-vault-commands*
 
 These commands are only defined when the buffer is a yaml file.
 
-                                                         *AnsibleVault*
-:AnsibleVault
-                        Encrypt the value of a key: value yaml pair under the
-                        cursor.
+						*AnsibleVault*
+:AnsibleVault		Encrypt the value of a key: value yaml pair under the
+			cursor.
 
-                                                         *AnsibleUnvault*
-:AnsibleUnvault
-                        Decrypt a vaulted value of a key: value yaml pair
-                        under the cursor.
+						*AnsibleUnvault*
+:AnsibleUnvault		Decrypt a vaulted value of a key: value yaml pair
+			under the cursor.
 
-LIMITATIONS                                             *ansible-vault-limits*
+==============================================================================
+5. Limitations					*ansible-vault-limits*
 
 Ansible-vault plugin does not use a complete Yaml parser, as such the cursor
 must be standing on the 'key: value' line when using the commands. For the
 same reason the key must not contains the ':' character, even if the Yaml
 specifications allows it.
 
- vim:tw=78:et:ft=help:norl:
-
+ vim:tw=78:ts=8:noet:ft=help:norl:
