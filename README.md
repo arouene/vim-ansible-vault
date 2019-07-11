@@ -19,15 +19,22 @@ You can define a mapping for the commands:
         nnoremap <Leader>av :AnsibleVault<CR>
         nnoremap <Leader>au :AnsibleUnvault<CR>
 
+`ansible-vault` executable must be indenpendently installed, executable and
+accessible from PATH environment.
+
 ## USAGE
 
 The `ANSIBLE_VAULT_PASSWORD_FILE` environment variable must be set to a valid
 file path containing the password to use with ansible-vault to decrypt or
 encrypt values.
 
-`ansible-vault` executable must be indenpendently installed, executable and
-accessible from PATH environment, see |ansible-vault-installation| 
+In the yaml file, place the cursor on a `key: value` yaml pair then execute
+the command `:AnsibleVault`. The encrypted value will replace the unencrypted
+value.
 
+To decrypt a value, in the yaml file, place the cursor on a `key: value` where
+value is `!vault |` then execute the command `:AnsibleUnvault`. The decrypted
+value will replace the crypted one.
 
 ### COMMANDS
 

@@ -7,16 +7,16 @@
 Author:  Aurélien Rouëné <aurelien.github.arouene@rouene.fr>
 License: Apache License 2.0
 
-1. Description		|ansible-vault|
-2. Installation		|ansible-vault-installation|
-3. Usage		|ansible-vault-usage|
-4. Commands		|ansible-vault-commands|
-5. Limitations		|ansible-vault-limits|
+1. Description			|ansible-vault|
+2. Installation			|ansible-vault-installation|
+3. Usage			|ansible-vault-usage|
+4. Commands			|ansible-vault-commands|
+5. Limitations			|ansible-vault-limits|
 
 ==============================================================================
 1. Description					*ansible-vault*
 
-This plugin can be used for vaulting or unvaulting an inline values of a yaml
+This plugin can be used for vaulting or unvaulting inline values of a yaml
 file
 
 ==============================================================================
@@ -26,7 +26,7 @@ With vundle, just insert the line below in your vimrc file:
 >
 	Plugin 'arouene/vim-ansible-vault'
 <
-Then use the command :PluginInstall
+Then use the command `:PluginInstall`
 
 You can define mapping for the commands:
 >
@@ -35,6 +35,9 @@ You can define mapping for the commands:
 	nnoremap <Leader>au :AnsibleUnvault<CR>
 <
 
+ansible-vault executable must be indenpendently installed, executable and
+accessible from PATH environment, see |ansible-vault-installation| 
+
 ==============================================================================
 3. Usage					*ansible-vault-usage*
 
@@ -42,8 +45,13 @@ The ANSIBLE_VAULT_PASSWORD_FILE environment variable must be set to a valid
 file path containing the password to use with ansible-vault to decrypt or
 encrypt values.
 
-ansible-vault executable must be indenpendently installed, executable and
-accessible from PATH environment, see |ansible-vault-installation| 
+In the yaml file, place the cursor on a `key: value` yaml pair then execute
+the command `:AnsibleVault`. The encrypted value will replace the unencrypted
+value.
+
+To decrypt a value, in the yaml file, place the cursor on a `key: value` where
+value is `!vault |` then execute the command `:AnsibleUnvault`. The decrypted
+value will replace the crypted one.
 
 
 ==============================================================================
@@ -63,7 +71,7 @@ These commands are only defined when the buffer is a yaml file.
 5. Limitations					*ansible-vault-limits*
 
 Ansible-vault plugin does not use a complete Yaml parser, as such the cursor
-must be standing on the 'key: value' line when using the commands. For the
+must be standing on the `key: value` line when using the commands. For the
 same reason the key must not contains the ':' character, even if the Yaml
 specifications allows it.
 
