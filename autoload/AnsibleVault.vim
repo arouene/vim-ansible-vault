@@ -9,7 +9,7 @@ let g:autoloaded_ansible_vault = 1
 
 "Check if the password file can be found
 function! s:checkPasswordFile()
-	let password_file = expand($ANSIBLE_VAULT_PASSWORD_FILE)
+	let password_file = expand(get(environ(), 'ANSIBLE_VAULT_PASSWORD_FILE', '~/.vault_password'))
 	if password_file == ''
 		echomsg 'ANSIBLE_VAULT_PASSWORD_FILE is not defined'
 		return 0
