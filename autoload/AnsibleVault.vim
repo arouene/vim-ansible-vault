@@ -54,7 +54,7 @@ function! s:getMultilineValue(start_pos)
 	let end_pos = a:start_pos
 	let bottom_line = line('$')
 	let indent = indent(a:start_pos)
-	while indent(end_pos) == indent && end_pos < bottom_line
+	while indent(end_pos) == indent && end_pos <= bottom_line
 		let lines = lines + [trim(getline(end_pos))]
 		let end_pos = end_pos + 1
 	endwhile
