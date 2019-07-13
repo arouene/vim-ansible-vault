@@ -49,6 +49,34 @@ function! s:getValue()
 	return [pos, line, value]
 endfunction
 
+function! s:getMultilineValue(start_pos)
+	let lines = []
+	let end_pos = a:start_pos
+	let bottom_line = line('$')
+	let indent = indent(a:start_pos)
+	while indent(end_pos) == indent && end_pos < bottom_line
+		let lines = lines + [trim(getline(end_pos))]
+		let end_pos = end_pos + 1
+	endwhile
+	return [a:start_pos, end_pos - 1, join(lines, '')]
+endfunction
+
+" Encrypt the value by calling ansible-vault
+function! s:encrypt(value)
+	let value = s:unquote(a:value)
+	return system('ansible-vault encrypt_string', value)
+endfunction
+
+" Decrypt the value by calling ansible-vault
+function! s:decrypt(value)
+	let result = system('ansible-vault decrypt', a:value)
+	if match(result, '^ERROR! ') != -1
+		echomsg result
+		return -1
+	endif
+	return result
+endfunction
+
 function! AnsibleVault#Vault() abort
 	if !s:checkPasswordFile() || !s:checkAnsibleVault()
 		return
@@ -66,13 +94,10 @@ function! AnsibleVault#Vault() abort
 		echomsg 'Multiline not supported'
 		return
 	endif
-	let original_value = value
-	let value = s:unquote(value)
-	" encrypt value
-	let res = system('ansible-vault encrypt_string', value)
 	" replace the value by the encrypted one
-	let new_line = s:replace(line, original_value, res)
+	let new_line = s:replace(line, value, s:encrypt(value))
 	call append(pos, split(new_line, '\n'))
+	" remove the current line, as we appended the encrypted line
 	normal! dd
 endfunction
 
@@ -88,23 +113,15 @@ function! AnsibleVault#Unvault() abort
 	if match(value, '!vault') == -1
 		return
 	endif
-	let lines = []
-	let original_pos = pos
-	let pos = pos + 1
-	let indent = indent(pos)
-	while indent(pos) == indent
-		let lines = lines + [trim(getline(pos))]
-		let pos = pos + 1
-	endwhile
-	" decrypt value
-	let res = system('ansible-vault decrypt', join(lines, ''))
+	let [value_begin, value_end, encrypted_value] = s:getMultilineValue(pos+1)
 	" replace the value by the unencrypted one
-	let new_line = s:replace(line, value, res)
-	call setline(original_pos, new_line)
-	" remove extra encrypted lines
-	let encrypted_begin = original_pos + 1
-	let encrypted_end = pos - 1
-	silent execute encrypted_begin.",".encrypted_end."d"
+	let decrypted_value = s:decrypt(encrypted_value)
+	if decrypted_value != -1
+		let new_line = s:replace(line, value, decrypted_value)
+		call setline(pos, new_line)
+		" remove extra encrypted lines
+		silent execute value_begin.",".value_end."d"
+	endif
 endfunction
 
 " Install public commands
