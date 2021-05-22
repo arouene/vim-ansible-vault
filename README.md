@@ -13,7 +13,7 @@ With vundle, just insert the line below in your vimrc file:
 
         Plugin 'arouene/vim-ansible-vault'
 
-Then use the command :PluginInstall
+Then use the command `:PluginInstall`
 
 ### Vim-Plug
 
@@ -21,7 +21,7 @@ With vim-plug, use that syntax in your vimrc file:
 
         Plug 'arouene/vim-ansible-vault', { 'for': ['yaml', 'yaml.ansible'] }
 
-And then use the command :PlugInstall
+And then use the command `:PlugInstall`
 
 ### Mapping
 
@@ -70,3 +70,5 @@ Ansible-vault plugin does not use a complete Yaml parser, as such the cursor
 must be standing on the 'key: value' line when using the commands. For the
 same reason the key must not contains the ':' character, even if the Yaml
 specifications allows it.
+
+For now, there is no support for *vault-id*.
