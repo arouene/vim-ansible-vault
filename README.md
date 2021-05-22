@@ -7,11 +7,23 @@ file
 
 ## INSTALLATION
 
+### Vundle
+
 With vundle, just insert the line below in your vimrc file:
 
         Plugin 'arouene/vim-ansible-vault'
 
 Then use the command :PluginInstall
+
+### Vim-Plug
+
+With vim-plug, use that syntax in your vimrc file:
+
+        Plug 'arouene/vim-ansible-vault', { 'for': ['yaml', 'yaml.ansible'] }
+
+And then use the command :PlugInstall
+
+### Mapping
 
 You can define a mapping for the commands:
 
@@ -21,6 +33,10 @@ You can define a mapping for the commands:
 
 `ansible-vault` executable must be indenpendently installed, executable and
 accessible from PATH environment.
+
+## CONFIGURATION
+
+
 
 ## USAGE
 
