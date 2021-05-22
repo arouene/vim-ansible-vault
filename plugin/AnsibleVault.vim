@@ -11,4 +11,6 @@ augroup AnsibleVault
 	autocmd!
 	autocmd FileType yaml
 		\ call AnsibleVault#Init()
+	autocmd FileType yaml.ansible
+		\ call AnsibleVault#Init()
 augroup END
