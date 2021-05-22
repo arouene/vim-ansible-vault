@@ -36,7 +36,11 @@ accessible from PATH environment.
 
 ## CONFIGURATION
 
+You can use configuration to customize behavior of vim-ansible-vault.
 
+| Flag                            | Default            | Description                                            |
+| ------------------------------- | ------------------ | ------------------------------------------------------ |
+| `g:ansible_vault_no_unquote`    | 0                  | Set to 1 to avoid triming quotes from decoded values   |
 
 ## USAGE
 

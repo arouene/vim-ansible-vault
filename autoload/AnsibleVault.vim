@@ -32,6 +32,9 @@ endfunction
 
 " Remove single quotes, double quotes, spaces, tabs
 function! s:unquote(string)
+	if exists('g:ansible_vault_no_unquote') && g:ansible_vault_no_unquote
+		return a:string
+	endif
 	return trim(a:string, '	 "''')
 endfunction
 
