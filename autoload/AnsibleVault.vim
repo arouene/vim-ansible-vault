@@ -7,15 +7,22 @@ if exists('g:autoloaded_ansible_vault')
 endif
 let g:autoloaded_ansible_vault = 1
 
-"Check if the password file can be found
+" Check if the password file can be found
 function! s:checkPasswordFile()
-	let password_file = expand(get(environ(), 'ANSIBLE_VAULT_PASSWORD_FILE', '~/.vault_password'))
-	if password_file == ''
-		echomsg 'ANSIBLE_VAULT_PASSWORD_FILE is not defined'
-		return 0
+	" if g:ansible_vault_password_file is already defined, it's value have
+	" precedence
+	if !exists('g:ansible_vault_password_file')
+		let g:ansible_vault_password_file = ''
 	endif
-	if !filereadable(password_file)
-		echomsg 'file ANSIBLE_VAULT_PASSWORD_FILE cannot be read'
+
+	" or we use ANSIBLE_VAULT_PASSWORD_FILE
+	if g:ansible_vault_password_file == ''
+		let pwfile = expand(get(environ(), 'ANSIBLE_VAULT_PASSWORD_FILE', '~/.vault_password'))
+		let g:ansible_vault_password_file = pwfile
+	endif
+
+	if !filereadable(g:ansible_vault_password_file)
+		echomsg 'password file ' . g:ansible_vault_password_file . ' cannot be read'
 		return 0
 	endif
 	return 1
