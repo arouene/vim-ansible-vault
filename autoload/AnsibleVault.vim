@@ -7,25 +7,21 @@ if exists('g:autoloaded_ansible_vault')
 endif
 let g:autoloaded_ansible_vault = 1
 
-" Check if the password file can be found
-function! s:checkPasswordFile()
-	" if g:ansible_vault_password_file is already defined, it's value have
-	" precedence
-	if !exists('g:ansible_vault_password_file')
-		let g:ansible_vault_password_file = ''
+" Build the ansible-vault command line. g:ansible_vault_password_file is
+" passed with --vault-password-file (it can be an executable); when unset,
+" ansible-vault uses its own configuration (ansible.cfg, ANSIBLE_VAULT_*).
+" Returns '' if the configured password file cannot be read.
+function! s:command(subcommand)
+	let pwfile = get(g:, 'ansible_vault_password_file', '')
+	if pwfile == ''
+		return 'ansible-vault ' . a:subcommand
 	endif
-
-	" or we use ANSIBLE_VAULT_PASSWORD_FILE
-	if g:ansible_vault_password_file == ''
-		let pwfile = expand(get(environ(), 'ANSIBLE_VAULT_PASSWORD_FILE', '~/.vault_password'))
-		let g:ansible_vault_password_file = pwfile
+	let pwfile = expand(pwfile)
+	if !filereadable(pwfile)
+		echomsg 'password file ' . pwfile . ' cannot be read'
+		return ''
 	endif
-
-	if !filereadable(g:ansible_vault_password_file)
-		echomsg 'password file ' . g:ansible_vault_password_file . ' cannot be read'
-		return 0
-	endif
-	return 1
+	return 'ansible-vault ' . a:subcommand . ' --vault-password-file ' . shellescape(pwfile)
 endfunction
 
 " Check if ansible-vault can be found and executed
@@ -74,12 +70,17 @@ endfunction
 " Encrypt the value by calling ansible-vault
 function! s:encrypt(value)
 	let value = s:unquote(a:value)
-	return system('ansible-vault encrypt_string', value)
+	let cmd = s:command('encrypt_string')
+	return cmd == '' ? '' : system(cmd, value)
 endfunction
 
 " Decrypt the value by calling ansible-vault
 function! s:decrypt(value)
-	let result = system('ansible-vault decrypt', a:value)
+	let cmd = s:command('decrypt')
+	if cmd == ''
+		return -1
+	endif
+	let result = system(cmd, a:value)
 	if match(result, '^ERROR! ') != -1
 		echomsg result
 		return -1
@@ -88,7 +89,7 @@ function! s:decrypt(value)
 endfunction
 
 function! AnsibleVault#Vault() abort
-	if !s:checkPasswordFile() || !s:checkAnsibleVault()
+	if !s:checkAnsibleVault()
 		return
 	endif
 	let [pos, line, value] = s:getValue()
@@ -105,14 +106,18 @@ function! AnsibleVault#Vault() abort
 		return
 	endif
 	" replace the value by the encrypted one
-	let new_line = s:replace(line, value, s:encrypt(value))
+	let encrypted = s:encrypt(value)
+	if encrypted == ''
+		return
+	endif
+	let new_line = s:replace(line, value, encrypted)
 	call append(pos, split(new_line, '\n'))
 	" remove the current line, as we appended the encrypted line
 	normal! dd
 endfunction
 
 function! AnsibleVault#Unvault() abort
-	if !s:checkPasswordFile() || !s:checkAnsibleVault()
+	if !s:checkAnsibleVault()
 		return
 	endif
 	let [pos, line, value] = s:getValue()

@@ -41,9 +41,19 @@ accessible from PATH environment, see |ansible-vault-installation|
 ==============================================================================
 3. Usage					*ansible-vault-usage*
 
-The ANSIBLE_VAULT_PASSWORD_FILE environment variable must be set to a valid
-file path containing the password to use with ansible-vault to decrypt or
-encrypt values.
+By default ansible-vault finds the password itself: ansible.cfg and the
+ANSIBLE_VAULT_PASSWORD_FILE, ANSIBLE_VAULT_IDENTITY_LIST and
+ANSIBLE_VAULT_ENCRYPT_IDENTITY environment variables apply, including multiple
+vault ids.
+
+						*g:ansible_vault_password_file*
+Set g:ansible_vault_password_file to override that. It is passed to
+ansible-vault as --vault-password-file (`~` and `$VAR` are expanded). The file
+can be plaintext, or an executable script printing the password to stdout
+(eg. using pass or gopass), which ansible-vault runs itself.
+>
+	let g:ansible_vault_password_file = '~/.vault_pass.sh'
+<
 
 In the yaml file, place the cursor on a `key: value` yaml pair then execute
 the command `:AnsibleVault`. The encrypted value will replace the unencrypted

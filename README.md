@@ -41,25 +41,23 @@ You can use configuration to customize behavior of vim-ansible-vault.
 | Variable                        | Default            | Description                                            |
 | ------------------------------- | ------------------ | ------------------------------------------------------ |
 | `g:ansible_vault_no_unquote`    | 0                  | Set to 1 to avoid triming quotes from decoded values   |
-| `g:ansible_vault_password_file` | ~/.vault_password  | Password file to use                                   |
+| `g:ansible_vault_password_file` | (unset)            | Password file (or executable) passed to ansible-vault |
 
 ## USAGE
 
-A password file is used by the commands `:AnsibleVault` and `:AnsibleUnvault`
-to respectively encrypt and decrypt the value of a yaml `key: value`. You first
-have to set which file your are using to store your password. To do that you
-can set the variable `g:ansible_vault_password_file` in your *vimrc*, or you
-can set an environment variable `ANSIBLE_VAULT_PASSWORD_FILE`. If neither are
-set, by default *vim-ansible-vault* will try to read the `~/.vault_password`
-file.
+By default *vim-ansible-vault* lets `ansible-vault` find the password itself,
+so `ansible.cfg` (`vault_password_file`, `vault_identity_list`) and the
+`ANSIBLE_VAULT_PASSWORD_FILE`, `ANSIBLE_VAULT_IDENTITY_LIST` and
+`ANSIBLE_VAULT_ENCRYPT_IDENTITY` environment variables work as on the command
+line, including multiple vault ids.
 
-Using the variable `g:ansible_vault_password_file` enables you to change it
-from within vim, using keybinding or autogroup to switch between multiple
-password files.
+To override that from vim, set `g:ansible_vault_password_file` in your *vimrc*.
+It is passed to `ansible-vault` as `--vault-password-file` (`~` and `$VAR` are
+expanded). You can change it from within vim, using keybinding or autogroup to
+switch between multiple password files.
 
-Password files are in plaintext, I have plans to add a support to use commands
-to retrieve a password (eg. using pass or gopass), let me know if you are
-interested.
+A password file is plaintext, or an executable script that prints the password
+to stdout (eg. using pass or gopass), which `ansible-vault` runs itself.
 
 In the yaml file, place the cursor on a `key: value` yaml pair then execute
 the command `:AnsibleVault`. The encrypted value will replace the unencrypted
@@ -84,4 +82,3 @@ must be standing on the 'key: value' line when using the commands. For the
 same reason the key must not contains the ':' character, even if the Yaml
 specifications allows it.
 
-For now, there is no support for **vault-id**.
