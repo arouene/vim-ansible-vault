@@ -71,7 +71,15 @@ endfunction
 function! s:encrypt(value)
 	let value = s:unquote(a:value)
 	let cmd = s:command('encrypt_string')
-	return cmd == '' ? '' : system(cmd, value)
+	if cmd == ''
+		return ''
+	endif
+	let result = system(cmd, value)
+	if v:shell_error || match(result, '^ERROR! ') != -1
+		echomsg result
+		return ''
+	endif
+	return result
 endfunction
 
 " Decrypt the value by calling ansible-vault
