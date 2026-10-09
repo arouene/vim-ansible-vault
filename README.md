@@ -41,7 +41,7 @@ You can use configuration to customize behavior of vim-ansible-vault.
 | Variable                        | Default            | Description                                            |
 | ------------------------------- | ------------------ | ------------------------------------------------------ |
 | `g:ansible_vault_no_unquote`    | 0                  | Set to 1 to avoid triming quotes from decoded values   |
-| `g:ansible_vault_password_file` | (unset)            | Password file (or executable) passed to ansible-vault |
+| `g:ansible_vault_password_file` | (unset)            | Password file (or executable) passed to ansible-vault  |
 
 ## USAGE
 
@@ -81,4 +81,3 @@ Ansible-vault plugin does not use a complete Yaml parser, as such the cursor
 must be standing on the 'key: value' line when using the commands. For the
 same reason the key must not contains the ':' character, even if the Yaml
 specifications allows it.
-
